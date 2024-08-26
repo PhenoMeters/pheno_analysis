@@ -1,5 +1,5 @@
 from Bio.PDB import PDBParser
-improt numpy as np
+import numpy as np
 
 '''
 returns distances between target protein and list of proteins
