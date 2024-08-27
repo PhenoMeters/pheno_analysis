@@ -15,30 +15,18 @@ returns distances between target protein and list of proteins
 # best metric for distance is get the distance between target and each of the list and average them out 
 
 def find_mean_distances(structure, target_residue, residue_list, pdb_path):
-    # create parser SF: this  parser need to be outside of loops
-    parser = PDBParser()
-    # read structure from file
-    structure = parser.get_structure('PHA-L', '1fat.pdb')
-
-    model = structure[0]
-    chain = model['A']
-
-    # this example uses only the first residue of a single chain.
-    # it is easy to extend this to multiple chains and residues.
     residue1 = target_residue
     distances = []
     for residue2 in residue_list:
         distances.append(get_pairwise_distance(structure, residue1, residue2))
-        # ceremove  NAs from distances
+        # remove  NAs from distances
+    
     return np.mean(distances)
 
-def get_pairwise_distance(structure, residu_e1, residue_2):
-                    try:
-                    distance = residue1['CA'] - residue2['CA']
-                except KeyError:
-                    ## no CA atom, e.g. for H_NAG
-                    continue
-                if distance < 6:
-                    print(residue1, residue2, distance)
-    dist = XXX
-    return dist
+def get_pairwise_distance(structure, residue_num_1, residue_num_2):
+    atom_1 = structure.query('residue_number == @residue_num_1 and atom_name == "CA"') # restrict to only res #1 and alpha carbon 
+    atom_2 = structure.query('residue_number == @residue_num_2 and atom_name == "CA"') # restrict to only res #2 and alpha carbon 
+    x_p, y_p, z_p = atom_1['x_coord'].values[0], atom_1['y_coord'].values[0], atom_1['z_coord'].values[0]
+    x_q, y_q, z_q  = atom_2['x_coord'].values[0], atom_2['y_coord'].values[0], atom_2['z_coord'].values[0]
+    distance = np.sqrt((x_p - x_q)**2 + (y_p - y_q)**2 + (z_p - z_q)**2)
+    return distance
