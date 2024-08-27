@@ -14,13 +14,15 @@ returns distances between target protein and list of proteins
 
 # best metric for distance is get the distance between target and each of the list and average them out 
 
-def find_mean_distances(structure, target_residue, residue_list, pdb_path):
+def find_mean_distances(structure, target_residue, residue_list):
     residue1 = target_residue
     distances = []
     for residue2 in residue_list:
-        distances.append(get_pairwise_distance(structure, residue1, residue2))
-        # remove  NAs from distances
-    
+        residue2 = float(residue2)
+        distance_to_add = get_pairwise_distance(structure, residue1, residue2)
+        # print(distance_to_add)
+        distances.append(distance_to_add)
+        distances = [x for x in distances if x != 'NaN']
     return np.mean(distances)
 
 def get_pairwise_distance(structure, residue_num_1, residue_num_2):
