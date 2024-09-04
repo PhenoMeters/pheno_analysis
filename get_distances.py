@@ -28,7 +28,10 @@ def find_mean_distances(structure, target_residue, residue_list):
 def get_pairwise_distance(structure, residue_num_1, residue_num_2):
     atom_1 = structure.query('residue_number == @residue_num_1 and atom_name == "CA"') # restrict to only res #1 and alpha carbon 
     atom_2 = structure.query('residue_number == @residue_num_2 and atom_name == "CA"') # restrict to only res #2 and alpha carbon 
-    x_p, y_p, z_p = atom_1['x_coord'].values[0], atom_1['y_coord'].values[0], atom_1['z_coord'].values[0]
-    x_q, y_q, z_q  = atom_2['x_coord'].values[0], atom_2['y_coord'].values[0], atom_2['z_coord'].values[0]
-    distance = np.sqrt((x_p - x_q)**2 + (y_p - y_q)**2 + (z_p - z_q)**2)
+    if None not in (atom_1['x_coord'].values[0], atom_1['y_coord'].values[0], atom_1['z_coord'].values[0],atom_2['x_coord'].values[0], atom_2['y_coord'].values[0], atom_2['z_coord'].values[0]):
+        print(atom_1['x_coord'].values[0], atom_1['y_coord'].values[0], atom_1['z_coord'].values[0])
+        print(atom_2['x_coord'].values[0], atom_2['y_coord'].values[0], atom_2['z_coord'].values[0])
+        x_p, y_p, z_p = atom_1['x_coord'].values[0], atom_1['y_coord'].values[0], atom_1['z_coord'].values[0]
+        x_q, y_q, z_q  = atom_2['x_coord'].values[0], atom_2['y_coord'].values[0], atom_2['z_coord'].values[0]
+        distance = np.sqrt((x_p - x_q)**2 + (y_p - y_q)**2 + (z_p - z_q)**2)
     return distance
