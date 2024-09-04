@@ -30,7 +30,7 @@ def get_pairwise_distance(structure, residue_num_1, residue_num_2):
     atom_1 = structure.query('residue_number == @residue_num_1 and atom_name == "CA"') # restrict to only res #1 and alpha carbon 
     atom_2 = structure.query('residue_number == @residue_num_2 and atom_name == "CA"') # restrict to only res #2 and alpha carbon 
     #print("Pre if statement")
-    if atom_1['x_coord'].values[0] and atom_1['y_coord'].values[0] and atom_1['z_coord'].values[0] and atom_2['x_coord'].values[0] and atom_2['y_coord'].values[0] and atom_2['z_coord'].values[0]: # if all of these values aren't empty
+    if atom_1['x_coord'].values and atom_1['y_coord'].values and atom_1['z_coord'].values and atom_2['x_coord'].values and atom_2['y_coord'].values and atom_2['z_coord'].values: # if all of these values aren't empty
         #print(atom_1['x_coord'].values, atom_1['y_coord'].values, atom_1['z_coord'].values)
         #print(atom_2['x_coord'].values, atom_2['y_coord'].values, atom_2['z_coord'].values)
         x_p, y_p, z_p = atom_1['x_coord'].values, atom_1['y_coord'].values, atom_1['z_coord'].values
