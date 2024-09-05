@@ -14,8 +14,8 @@ usage:   pockets.py <path to phosphosite data> <path to pockets data>
 
 '''
 
-psp_data = sys.argv[1]
-pockets_data = sys.argv[2]
+psp_data = pd.read_csv(sys.argv[1])
+pockets_data = pd.read_csv(sys.argv[2])
 
 #adding columns to psp data
 psp_data['closest_pocket'] = "NaN"
@@ -78,7 +78,7 @@ for uniprot in unique_uniprots:
                 
     else: # if we can't find the pdb file
         for phosphosite_row_index in psp_only_uniprot.index:
-            residue_num = str(psp_only_uniprot.loc[phosphosite_row_index,'res_number']) # finding the residue number of the psp
+            residue_num = psp_only_uniprot.loc[phosphosite_row_index,'res_number'] # finding the residue number of the psp
             # use the residue # to get the coordinates in space from pdb file
             
             for pocket_index in pocket_only_uniprot.index : # get all the residues in all of the pockets 
@@ -91,4 +91,6 @@ for uniprot in unique_uniprots:
                     psp_data.loc[phosphosite_row_index,'inside_pocket'] = 'NaN' 
                     psp_data.loc[phosphosite_row_index,'closest_pocket'] = 'NaN' 
                     psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = 'NaN'
+
+psp_data.to_csv("/people/imal967/git_repos/pheno_analysis/merged_pockets.csv")
                     
