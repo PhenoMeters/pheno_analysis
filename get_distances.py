@@ -25,6 +25,11 @@ def find_mean_distances(structure, target_residue, residue_list):
         distances = [x for x in distances if x != 'NaN']
     return np.mean(distances)
 
+
+'''
+returns distance between 2 proteins, using the CA atom from each protein
+'''
+
 def get_pairwise_distance(structure, residue_num_1, residue_num_2):
     #print("Begin get_pairwise_distance")
     atom_1 = structure.query('residue_number == @residue_num_1 and atom_name == "CA"') # restrict to only res #1 and alpha carbon 
