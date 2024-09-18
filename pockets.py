@@ -55,6 +55,7 @@ def find_pockets_per_uniprot(uniprot):
             #print(psp_only_uniprot)
             #print(phosphosite_row_index)
             residue_num = psp_only_uniprot.loc[phosphosite_row_index,'res_number'] # finding the residue number of the psp
+            min_dist = 100000000000000000000000000000000 # make min dist extremely high at first
             #print(residue_num)
             # use the residue # to get the coordinates in space from pdb file
             
@@ -73,22 +74,18 @@ def find_pockets_per_uniprot(uniprot):
 
                 if psp_data.loc[phosphosite_row_index,'inside_pocket'] == 0: # if the phosphosite isn't in any pockets
                     print("phosphosite isn't in any pockets")
-                    min_dist = 100000000000000000000000000000000 # make min dist extremely high at first
-                    for pocket_index in pocket_only_uniprot.index:
-                        input_struct = ppdb.df['ATOM']
-                        #print(input_struct)
-                        new_dist = find_mean_distances(input_struct, residue_num, pocket_residues)
-                        if residue_num:
-                            if min_dist > new_dist: # if this is the smallest distance so far, replace min_dist with new_dist
-                                psp_data.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
-                                psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = new_dist # replace distance_from_pocket with min_dist
-                                min_dist = new_dist 
-                                print("added smallest distance:", min_dist)
+                    input_struct = ppdb.df['ATOM']
+                    #print(input_struct)
+                    new_dist = find_mean_distances(input_struct, residue_num, pocket_residues)
+                    if residue_num:
+                        if min_dist > new_dist: # if this is the smallest distance so far, replace min_dist with new_dist
+                            psp_data.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
+                            psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = new_dist # replace distance_from_pocket with min_dist
+                            min_dist = new_dist 
+                            print("added smallest distance:", min_dist)
                 
     else: # if we can't find the pdb file
         for phosphosite_row_index in psp_only_uniprot.index:
-            residue_num = psp_only_uniprot.loc[phosphosite_row_index,'res_number'] # finding the residue number of the psp
-            # fill all with NaN bc we can't find a pdb file
             psp_data.loc[phosphosite_row_index,'inside_pocket'] = 'NaN' 
             psp_data.loc[phosphosite_row_index,'closest_pocket'] = 'NaN' 
             psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = 'NaN'
