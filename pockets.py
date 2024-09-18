@@ -17,25 +17,40 @@ usage:   pockets.py <path to phosphosite data> <path to pockets data>
 
 '''
 
-psp_data = pd.read_csv(sys.argv[1])
-pockets_data = pd.read_csv(sys.argv[2])
 
-#adding columns to psp data
-psp_data['closest_pocket'] = "NaN"
-psp_data['inside_pocket'] = 0
-psp_data['distance_from_pocket'] = "NaN"
+def run_parallel_pockets():
+    #adding columns to psp data
+    output_location = pd.read_csv(sys.argv[3])
 
-# get all of the unique uniprots
-unique_uniprots = psp_data['uniprot_id'].unique() 
+    # get all of the unique uniprots
+    unique_uniprots = psp_data['uniprot_id'].unique() 
+
+    start_time = time.perf_counter()
+    with Pool(2) as pool:
+        pool.map(target = find_pockets_per_uniprot, args = unique_uniprots)
+    finish_time = time.perf_counter()
+    
+    # save the csv and output the start and end times
+    psp_data.to_csv(output_location)
 
 
 '''
-this function gets all of the 
+this function does pockets calcuations for each uniprot tthat it is given
 '''
 
 # for each unique uniprotID...
 # for uniprot in unique_uniprots:
 def find_pockets_per_uniprot(uniprot):
+
+    # currently putting in the arguments like this bc i dont know how to put in several inputs into multithreading
+    psp_data = pd.read_csv(sys.argv[1])
+    pockets_data = pd.read_csv(sys.argv[2])
+
+    psp_data['closest_pocket'] = "NaN"
+    psp_data['inside_pocket'] = 0
+    psp_data['distance_from_pocket'] = "NaN"
+
+    
     # isolate to psp and pockets in each uniprot
     psp_only_uniprot = psp_data[psp_data.uniprot_id == uniprot]
     pocket_only_uniprot = pockets_data[pockets_data.uniprot_id == uniprot]
@@ -89,16 +104,16 @@ def find_pockets_per_uniprot(uniprot):
             psp_data.loc[phosphosite_row_index,'inside_pocket'] = 'NaN' 
             psp_data.loc[phosphosite_row_index,'closest_pocket'] = 'NaN' 
             psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = 'NaN'
-    return psp_data
 
-#psp_data.to_csv("/people/imal967/git_repos/pheno_analysis/merged_pockets.csv")
+
+
+
+
+
                     
 
 if __name__ == "__main__":
+    run_parallel_pockets()
     # first way, using multiprocessing
-    start_time = time.perf_counter()
-    with Pool() as pool:
-      result = pool.map(cube, range(10,N))
-    finish_time = time.perf_counter()
     print("Program finished in {} seconds - using multiprocessing".format(finish_time-start_time))
     print("---")
