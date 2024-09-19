@@ -17,22 +17,29 @@ usage:   pockets.py <path to phosphosite data> <path to pockets data>
 
 '''
 
+# currently putting these outside the functions because i dont' know how to put this in with multithreading. but this is pretty bad practice
+psp_data = pd.read_csv(sys.argv[1])
+pockets_data = pd.read_csv(sys.argv[2])
+output_location = sys.argv[3]
 
 def run_parallel_pockets():
     #adding columns to psp data
-    output_location = pd.read_csv(sys.argv[3])
+
+    psp_data['closest_pocket'] = "NaN"
+    psp_data['inside_pocket'] = 0
+    psp_data['distance_from_pocket'] = "NaN"
 
     # get all of the unique uniprots
     unique_uniprots = psp_data['uniprot_id'].unique() 
 
     start_time = time.perf_counter()
-    with Pool(2) as pool:
-        pool.map(target = find_pockets_per_uniprot, args = unique_uniprots)
+    with Pool(64) as pool:
+        output = pool.map(find_pockets_per_uniprot, unique_uniprots)
     finish_time = time.perf_counter()
     
     # save the csv and output the start and end times
-    psp_data.to_csv(output_location)
-
+    print("Program finished in {} seconds - using multiprocessing".format(finish_time-start_time))
+    return(output)
 
 '''
 this function does pockets calcuations for each uniprot tthat it is given
@@ -42,15 +49,6 @@ this function does pockets calcuations for each uniprot tthat it is given
 # for uniprot in unique_uniprots:
 def find_pockets_per_uniprot(uniprot):
 
-    # currently putting in the arguments like this bc i dont know how to put in several inputs into multithreading
-    psp_data = pd.read_csv(sys.argv[1])
-    pockets_data = pd.read_csv(sys.argv[2])
-
-    psp_data['closest_pocket'] = "NaN"
-    psp_data['inside_pocket'] = 0
-    psp_data['distance_from_pocket'] = "NaN"
-
-    
     # isolate to psp and pockets in each uniprot
     psp_only_uniprot = psp_data[psp_data.uniprot_id == uniprot]
     pocket_only_uniprot = pockets_data[pockets_data.uniprot_id == uniprot]
@@ -59,7 +57,7 @@ def find_pockets_per_uniprot(uniprot):
     # parse your structure here
     pdb_path = "/rcfs/projects/proteometer/alphafold_swissprot_pdb"
     pdb_name = glob.glob("/rcfs/projects/proteometer/alphafold_swissprot_pdb/*" + uniprot + "*")
-    print("name of pdb is:", pdb_name)
+    #print("name of pdb is:", pdb_name)
     if pdb_name:  
         ppdb = PandasPdb()  
         ppdb.read_pdb(pdb_name[0])
@@ -80,7 +78,7 @@ def find_pockets_per_uniprot(uniprot):
 
                 # check if it's inside of a pocket
                 pocket_residues = pocket_residues[1:-1].split(",") # format the pocket_residues because it's a string
-                #print(pocket_residues)
+                print(pocket_residues)
                 if residue_num in pocket_residues:
                     psp_data.loc[phosphosite_row_index,'inside_pocket'] = 1 # if residue is in the pocket, put 1 in the inside pocket column
                     psp_data.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
@@ -88,7 +86,7 @@ def find_pockets_per_uniprot(uniprot):
                     break # break because you don't want to contiue looking for pockets (and therefore overwrite the inside pocket and closest pocket)
 
                 if psp_data.loc[phosphosite_row_index,'inside_pocket'] == 0: # if the phosphosite isn't in any pockets
-                    print("phosphosite isn't in any pockets")
+                    #print("phosphosite isn't in any pockets")
                     input_struct = ppdb.df['ATOM']
                     #print(input_struct)
                     new_dist = find_mean_distances(input_struct, residue_num, pocket_residues)
@@ -105,7 +103,7 @@ def find_pockets_per_uniprot(uniprot):
             psp_data.loc[phosphosite_row_index,'closest_pocket'] = 'NaN' 
             psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = 'NaN'
 
-
+    return(psp_data)
 
 
 
@@ -113,7 +111,5 @@ def find_pockets_per_uniprot(uniprot):
                     
 
 if __name__ == "__main__":
-    run_parallel_pockets()
-    # first way, using multiprocessing
-    print("Program finished in {} seconds - using multiprocessing".format(finish_time-start_time))
-    print("---")
+    list_to_export = run_parallel_pockets()
+    pd.DataFrame(list_to_export[1]).to_csv(output_location)
