@@ -10,6 +10,7 @@ from multiprocessing import Pool
 import time
 import math
 import datetime
+import pickle
 
 
 '''
@@ -101,8 +102,9 @@ def find_pockets_per_uniprot(psp_only_uniprot):
                                     print("added smallest distance:", min_dist)
 
 
-        #print("end")
-
+    #print(uniprot)
+    with open(f'{uniprot}.pkl', 'wb') as handle:
+        pickle.dump(psp_only_uniprot, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return(psp_data)
                     
 

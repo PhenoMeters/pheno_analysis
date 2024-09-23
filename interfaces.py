@@ -10,6 +10,7 @@ from multiprocessing import Pool
 import time
 import math
 import datetime
+import pickle
 
 
 def run_parallel_interfaces(number_of_threads, psp_data):
@@ -103,6 +104,8 @@ def find_interfaces_per_uniprot(psp_only_uniprot):
                                     psp_only_uniprot.loc[phosphosite_row_index,'distance_from_interface'] = new_dist # replace distance_from_interface with min_dist
                                     min_dist = new_dist
                                     print("replaced old dist with", min_dist)
+    with open(f'{uniprot}.pkl', 'wb') as handle:
+        pickle.dump(psp_only_uniprot, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return(psp_only_uniprot)
 
 
