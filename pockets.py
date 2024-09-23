@@ -9,6 +9,7 @@ import sys
 from multiprocessing import Pool
 import time
 import math
+import datetime
 
 
 '''
@@ -18,28 +19,26 @@ usage:   pockets.py <path to phosphosite data> <path to pockets data>
 '''
 
 # currently putting these outside the functions because i dont' know how to put this in with multithreading. but this is pretty bad practice
-psp_data = pd.read_csv(sys.argv[1])
-pockets_data = pd.read_csv(sys.argv[2])
-output_location = sys.argv[3]
-
-def run_parallel_pockets():
+def run_parallel_pockets(number_of_threads, psp_data):
     #adding columns to psp data
 
-    psp_data['closest_pocket'] = "NaN"
+    psp_data['closest_pocket'] = ""
     psp_data['inside_pocket'] = 0
-    psp_data['distance_from_pocket'] = "NaN"
+    psp_data['distance_from_pocket'] = np.nan
 
     # get all of the unique uniprots
-    unique_uniprots = psp_data['uniprot_id'].unique() 
+    unique_uniprot_psp = [psp_data[psp_data["uniprot_id"]==uniprot_id].copy() for uniprot_id in psp_data["uniprot_id"].unique()]
+
 
     start_time = time.perf_counter()
-    with Pool(64) as pool:
-        output = pool.map(find_pockets_per_uniprot, unique_uniprots)
+    with Pool(10) as pool:
+        output = pool.map(find_pockets_per_uniprot, unique_uniprot_psp)
     finish_time = time.perf_counter()
     
     # save the csv and output the start and end times
-    print("Program finished in {} seconds - using multiprocessing".format(finish_time-start_time))
-    return(output)
+    print("Program finished in {} seconds - using multiprocessing with {} cores".format(str(datetime.timedelta(seconds=finish_time-start_time)), number_of_threads))
+    concatenated_output = pd.concat(output)
+    return(concatenated_output)
 
 '''
 this function does pockets calcuations for each uniprot tthat it is given
@@ -47,17 +46,17 @@ this function does pockets calcuations for each uniprot tthat it is given
 
 # for each unique uniprotID...
 # for uniprot in unique_uniprots:
-def find_pockets_per_uniprot(uniprot):
-
+def find_pockets_per_uniprot(psp_only_uniprot):
+    #print("start")
     # isolate to psp and pockets in each uniprot
-    psp_only_uniprot = psp_data[psp_data.uniprot_id == uniprot]
-    pocket_only_uniprot = pockets_data[pockets_data.uniprot_id == uniprot]
+    pockets_data = pd.read_csv("/people/imal967/git_repos/pheno_analysis/pockets_data.csv")
+    uniprot = psp_only_uniprot["uniprot_id"].to_list()[0]
+    pocket_only_uniprot = pockets_data[pockets_data['uniprot_id'] == uniprot]
 
 
     # parse your structure here
-    pdb_path = "/rcfs/projects/proteometer/alphafold_swissprot_pdb"
-    pdb_name = glob.glob("/rcfs/projects/proteometer/alphafold_swissprot_pdb/*" + uniprot + "*")
-    #print("name of pdb is:", pdb_name)
+    pdb_name = glob.glob("/rcfs/projects/proteometer/alphafold_swissprot_pdb/*" + uniprot + "-F1-*")
+    print("name of pdb is:", pdb_name)
     if pdb_name:  
         ppdb = PandasPdb()  
         ppdb.read_pdb(pdb_name[0])
@@ -65,51 +64,51 @@ def find_pockets_per_uniprot(uniprot):
 
     # for each psp
         for phosphosite_row_index in psp_only_uniprot.index:
-            #print(psp_only_uniprot)
-            #print(phosphosite_row_index)
-            residue_num = psp_only_uniprot.loc[phosphosite_row_index,'res_number'] # finding the residue number of the psp
-            min_dist = 100000000000000000000000000000000 # make min dist extremely high at first
-            #print(residue_num)
-            # use the residue # to get the coordinates in space from pdb file
-            
-            
-            for pocket_index in pocket_only_uniprot.index : # get all the residues in all of the pockets 
-                pocket_residues = pocket_only_uniprot.loc[pocket_index,'pocket_resid']
-
-                # check if it's inside of a pocket
-                pocket_residues = pocket_residues[1:-1].split(",") # format the pocket_residues because it's a string
-                print(pocket_residues)
-                if residue_num in pocket_residues:
-                    psp_data.loc[phosphosite_row_index,'inside_pocket'] = 1 # if residue is in the pocket, put 1 in the inside pocket column
-                    psp_data.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
-                    psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = 0 
-                    break # break because you don't want to contiue looking for pockets (and therefore overwrite the inside pocket and closest pocket)
-
-                if psp_data.loc[phosphosite_row_index,'inside_pocket'] == 0: # if the phosphosite isn't in any pockets
-                    #print("phosphosite isn't in any pockets")
-                    input_struct = ppdb.df['ATOM']
-                    #print(input_struct)
-                    new_dist = find_mean_distances(input_struct, residue_num, pocket_residues)
-                    if residue_num:
-                        if min_dist > new_dist: # if this is the smallest distance so far, replace min_dist with new_dist
-                            psp_data.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
-                            psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = new_dist # replace distance_from_pocket with min_dist
-                            min_dist = new_dist 
-                            print("added smallest distance:", min_dist)
+            if pd.notna(psp_only_uniprot.loc[phosphosite_row_index,'res_number']):
+                #print(psp_only_uniprot)
+                #print(phosphosite_row_index)
+                residue_num = int(psp_only_uniprot.loc[phosphosite_row_index,'res_number']) # finding the residue number of the psp
+                min_dist = np.inf # make min dist extremely high at first
+                #print(residue_num)
+                # use the residue # to get the coordinates in space from pdb file
                 
-    else: # if we can't find the pdb file
-        for phosphosite_row_index in psp_only_uniprot.index:
-            psp_data.loc[phosphosite_row_index,'inside_pocket'] = 'NaN' 
-            psp_data.loc[phosphosite_row_index,'closest_pocket'] = 'NaN' 
-            psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = 'NaN'
+                
+                for pocket_index in pocket_only_uniprot.index : # get all the residues in all of the pockets 
+                    if pd.notna(pocket_only_uniprot.loc[pocket_index,'pocket_resid']):
+                        pocket_residues = pocket_only_uniprot.loc[pocket_index,'pocket_resid']
+
+                        # format the residues
+                        pocket_residues = [int(e) for e in pocket_residues[1:-1].split(",")]
+                        #print(pocket_residues)
+                        if residue_num in pocket_residues:
+                            psp_data.loc[phosphosite_row_index,'inside_pocket'] = 1 # if residue is in the pocket, put 1 in the inside pocket column
+                            psp_data.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
+                            psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = 0 
+                            break # break because you don't want to contiue looking for pockets (and therefore overwrite the inside pocket and closest pocket)
+                        else: # if the phosphosite isn't in any pockets
+                            #print("phosphosite isn't in any pockets")
+                            input_struct = ppdb.df['ATOM']
+                            #print(input_struct)
+                            print(residue_num)
+                            print(pocket_residues)
+                            new_dist = find_mean_distances(input_struct, residue_num, pocket_residues)
+                            # print(new_dist)
+                            if new_dist:
+                                if min_dist > new_dist: # if this is the smallest distance so far, replace min_dist with new_dist
+                                    psp_data.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
+                                    psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = new_dist # replace distance_from_pocket with min_dist
+                                    min_dist = new_dist 
+                                    print("added smallest distance:", min_dist)
+
+
+        #print("end")
 
     return(psp_data)
-
-
-
-
                     
 
 if __name__ == "__main__":
-    list_to_export = run_parallel_pockets()
-    pd.DataFrame(list_to_export[1]).to_csv(output_location)
+    num_threads = 64
+    psp_data = pd.read_csv(sys.argv[1])
+    output_location = sys.argv[2]
+    df_to_export = run_parallel_pockets(num_threads, psp_data)
+    pd.DataFrame(df_to_export).to_csv(output_location)

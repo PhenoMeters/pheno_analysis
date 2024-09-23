@@ -18,12 +18,10 @@ def find_mean_distances(structure, target_residue, residue_list):
     residue1 = target_residue
     distances = []
     for residue2 in residue_list:
-        residue2 = float(residue2)
         distance_to_add = get_pairwise_distance(structure, residue1, residue2)
         # print(distance_to_add)
         distances.append(distance_to_add)
-        distances = [x for x in distances if x != 'NaN']
-    return np.mean(distances)
+    return np.nanmean(distances)
 
 
 '''
@@ -41,6 +39,7 @@ def get_pairwise_distance(structure, residue_num_1, residue_num_2):
         x_p, y_p, z_p = atom_1['x_coord'].values, atom_1['y_coord'].values, atom_1['z_coord'].values
         x_q, y_q, z_q  = atom_2['x_coord'].values, atom_2['y_coord'].values, atom_2['z_coord'].values
         distance = np.sqrt((x_p - x_q)**2 + (y_p - y_q)**2 + (z_p - z_q)**2)
+        #print(distance)
     else: 
-        distance = 'NaN'
+        distance = np.array([])
     return distance
