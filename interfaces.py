@@ -43,7 +43,7 @@ this function does interfaces calcuations for each uniprot tthat it is given
 
 # for each unique uniprotID...
 # for uniprot in unique_uniprots:
-def find_interfaces_per_uniprot(psp_only_uniprot):
+def find_interfaces_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/proteometer/pheno_analysis/pickle_files"):
 
     # isolate to psp and interfaces in each uniprot
     interfaces_data = pd.read_csv("/rcfs/projects/proteometer/ProtVar/predictions/interfaces/2024.05.28_interface_summary_5A.tsv", delimiter='\t', header=0)
@@ -104,7 +104,7 @@ def find_interfaces_per_uniprot(psp_only_uniprot):
                                     psp_only_uniprot.loc[phosphosite_row_index,'distance_from_interface'] = new_dist # replace distance_from_interface with min_dist
                                     min_dist = new_dist
                                     print("replaced old dist with", min_dist)
-    with open(f'{uniprot}.pkl', 'wb') as handle:
+    with open(f'{pickle_output}/{uniprot}.pkl', 'wb') as handle:
         pickle.dump(psp_only_uniprot, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return(psp_only_uniprot)
 

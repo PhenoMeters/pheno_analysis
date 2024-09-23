@@ -47,7 +47,7 @@ this function does pockets calcuations for each uniprot tthat it is given
 
 # for each unique uniprotID...
 # for uniprot in unique_uniprots:
-def find_pockets_per_uniprot(psp_only_uniprot):
+def find_pockets_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/proteometer/pheno_analysis/pickle_files"):
     #print("start")
     # isolate to psp and pockets in each uniprot
     pockets_data = pd.read_csv("/people/imal967/git_repos/pheno_analysis/pockets_data.csv")
@@ -103,7 +103,7 @@ def find_pockets_per_uniprot(psp_only_uniprot):
 
 
     #print(uniprot)
-    with open(f'{uniprot}.pkl', 'wb') as handle:
+    with open(f'{pickle_output}/{uniprot}.pkl', 'wb') as handle:
         pickle.dump(psp_only_uniprot, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return(psp_data)
                     
