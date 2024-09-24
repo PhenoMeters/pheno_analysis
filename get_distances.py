@@ -41,5 +41,5 @@ def get_pairwise_distance(structure, residue_num_1, residue_num_2):
         distance = np.sqrt((x_p - x_q)**2 + (y_p - y_q)**2 + (z_p - z_q)**2)
         #print(distance)
     else: 
-        distance = np.array([])
+        distance = np.array([np.nan])
     return distance

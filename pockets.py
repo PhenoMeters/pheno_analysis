@@ -11,6 +11,7 @@ import time
 import math
 import datetime
 import pickle
+import os
 
 
 '''
@@ -32,7 +33,7 @@ def run_parallel_pockets(number_of_threads, psp_data):
 
 
     start_time = time.perf_counter()
-    with Pool(10) as pool:
+    with Pool(number_of_threads) as pool:
         output = pool.map(find_pockets_per_uniprot, unique_uniprot_psp)
     finish_time = time.perf_counter()
     
@@ -47,11 +48,17 @@ this function does pockets calcuations for each uniprot tthat it is given
 
 # for each unique uniprotID...
 # for uniprot in unique_uniprots:
-def find_pockets_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/proteometer/pheno_analysis/pickle_files"):
+def find_pockets_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/proteometer/pheno_analysis/pocket_pickle_files"):
     #print("start")
     # isolate to psp and pockets in each uniprot
     pockets_data = pd.read_csv("/people/imal967/git_repos/pheno_analysis/pockets_data.csv")
     uniprot = psp_only_uniprot["uniprot_id"].to_list()[0]
+    pickle_file_path = f"{pickle_output}/{uniprot}.pkl"
+    if os.path.isfile(pickle_file_path):
+        with open(pickle_file_path, 'rb') as handle:
+            psp_data = pickle.load(handle)
+        return(psp_data)
+    
     pocket_only_uniprot = pockets_data[pockets_data['uniprot_id'] == uniprot]
 
 
@@ -82,9 +89,9 @@ def find_pockets_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/pr
                         pocket_residues = [int(e) for e in pocket_residues[1:-1].split(",")]
                         #print(pocket_residues)
                         if residue_num in pocket_residues:
-                            psp_data.loc[phosphosite_row_index,'inside_pocket'] = 1 # if residue is in the pocket, put 1 in the inside pocket column
-                            psp_data.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
-                            psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = 0 
+                            pocket_only_uniprot.loc[phosphosite_row_index,'inside_pocket'] = 1 # if residue is in the pocket, put 1 in the inside pocket column
+                            pocket_only_uniprot.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
+                            pocket_only_uniprot.loc[phosphosite_row_index,'distance_from_pocket'] = 0 
                             break # break because you don't want to contiue looking for pockets (and therefore overwrite the inside pocket and closest pocket)
                         else: # if the phosphosite isn't in any pockets
                             #print("phosphosite isn't in any pockets")
@@ -96,16 +103,16 @@ def find_pockets_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/pr
                             # print(new_dist)
                             if new_dist:
                                 if min_dist > new_dist: # if this is the smallest distance so far, replace min_dist with new_dist
-                                    psp_data.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
-                                    psp_data.loc[phosphosite_row_index,'distance_from_pocket'] = new_dist # replace distance_from_pocket with min_dist
+                                    pocket_only_uniprot.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
+                                    pocket_only_uniprot.loc[phosphosite_row_index,'distance_from_pocket'] = new_dist # replace distance_from_pocket with min_dist
                                     min_dist = new_dist 
                                     print("added smallest distance:", min_dist)
 
 
     #print(uniprot)
-    with open(f'{pickle_output}/{uniprot}.pkl', 'wb') as handle:
+    with open(pickle_file_path, 'wb') as handle:
         pickle.dump(psp_only_uniprot, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    return(psp_data)
+    return(pocket_only_uniprot)
                     
 
 if __name__ == "__main__":

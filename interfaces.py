@@ -11,6 +11,7 @@ import time
 import math
 import datetime
 import pickle
+import os
 
 
 def run_parallel_interfaces(number_of_threads, psp_data):
@@ -43,11 +44,18 @@ this function does interfaces calcuations for each uniprot tthat it is given
 
 # for each unique uniprotID...
 # for uniprot in unique_uniprots:
-def find_interfaces_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/proteometer/pheno_analysis/pickle_files"):
+def find_interfaces_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/proteometer/pheno_analysis/interfaces_pickle_files"):
 
     # isolate to psp and interfaces in each uniprot
     interfaces_data = pd.read_csv("/rcfs/projects/proteometer/ProtVar/predictions/interfaces/2024.05.28_interface_summary_5A.tsv", delimiter='\t', header=0)
     uniprot = psp_only_uniprot["uniprot_id"].to_list()[0]
+    pickle_file_path = f"{pickle_output}/{uniprot}.pkl"
+    if os.path.isfile(pickle_file_path):
+        with open(pickle_file_path, 'rb') as handle:
+            psp_data = pickle.load(handle)
+        return(psp_data)
+
+
     interface_only_uniprot = interfaces_data.loc[(interfaces_data['uniprot_id1'] == uniprot) | (interfaces_data['uniprot_id2'] == uniprot)] # isolate to uniprot in either 1 or 2
 
 
@@ -104,7 +112,7 @@ def find_interfaces_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects
                                     psp_only_uniprot.loc[phosphosite_row_index,'distance_from_interface'] = new_dist # replace distance_from_interface with min_dist
                                     min_dist = new_dist
                                     print("replaced old dist with", min_dist)
-    with open(f'{pickle_output}/{uniprot}.pkl', 'wb') as handle:
+    with open(pickle_file_path, 'wb') as handle:
         pickle.dump(psp_only_uniprot, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return(psp_only_uniprot)
 
