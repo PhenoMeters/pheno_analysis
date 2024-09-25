@@ -24,7 +24,7 @@ usage:   pockets.py <path to phosphosite data> <path to pockets data>
 def run_parallel_pockets(number_of_threads, psp_data):
     #adding columns to psp data
 
-    psp_data['closest_pocket'] = ""
+    psp_data['closest_pocket'] = []
     psp_data['inside_pocket'] = 0
     psp_data['distance_from_pocket'] = np.nan
 
@@ -80,7 +80,7 @@ def find_pockets_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/pr
                 #print(residue_num)
                 # use the residue # to get the coordinates in space from pdb file
                 
-                
+                pocket_list = []
                 for pocket_index in pocket_only_uniprot.index : # get all the residues in all of the pockets 
                     if pd.notna(pocket_only_uniprot.loc[pocket_index,'pocket_resid']):
                         pocket_residues = pocket_only_uniprot.loc[pocket_index,'pocket_resid']
@@ -89,11 +89,11 @@ def find_pockets_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/pr
                         pocket_residues = [int(e) for e in pocket_residues[1:-1].split(",")]
                         #print(pocket_residues)
                         if residue_num in pocket_residues:
-                            pocket_only_uniprot.loc[phosphosite_row_index,'inside_pocket'] = 1 # if residue is in the pocket, put 1 in the inside pocket column
-                            pocket_only_uniprot.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
-                            pocket_only_uniprot.loc[phosphosite_row_index,'distance_from_pocket'] = 0 
-                            break # break because you don't want to contiue looking for pockets (and therefore overwrite the inside pocket and closest pocket)
-                        else: # if the phosphosite isn't in any pockets
+                            psp_only_uniprot.loc[phosphosite_row_index,'inside_pocket'] = 1 # if residue is in the pocket, put 1 in the inside pocket column
+                            psp_only_uniprot.loc[phosphosite_row_index,'closest_pocket'] = pocket_list.append(pocket_only_uniprot.loc[pocket_index,'full_id']) # put unique pocketID in closest pocket
+                            psp_only_uniprot.loc[phosphosite_row_index,'distance_from_pocket'] = 0 
+                            min_dist = 0.0
+                        elif min_dist != 0.0: # if the phosphosite isn't in any pockets
                             #print("phosphosite isn't in any pockets")
                             input_struct = ppdb.df['ATOM']
                             #print(input_struct)
@@ -103,8 +103,8 @@ def find_pockets_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/pr
                             # print(new_dist)
                             if new_dist:
                                 if min_dist > new_dist: # if this is the smallest distance so far, replace min_dist with new_dist
-                                    pocket_only_uniprot.loc[phosphosite_row_index,'closest_pocket'] = pocket_only_uniprot.loc[pocket_index,'full_id'] # put unique pocketID in closest pocket
-                                    pocket_only_uniprot.loc[phosphosite_row_index,'distance_from_pocket'] = new_dist # replace distance_from_pocket with min_dist
+                                    psp_only_uniprot.loc[phosphosite_row_index,'closest_pocket'] = [pocket_only_uniprot.loc[pocket_index,'full_id']] # put unique pocketID in closest pocket
+                                    psp_only_uniprot.loc[phosphosite_row_index,'distance_from_pocket'] = new_dist # replace distance_from_pocket with min_dist
                                     min_dist = new_dist 
                                     print("added smallest distance:", min_dist)
 
@@ -112,7 +112,7 @@ def find_pockets_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects/pr
     #print(uniprot)
     with open(pickle_file_path, 'wb') as handle:
         pickle.dump(psp_only_uniprot, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    return(pocket_only_uniprot)
+    return(psp_only_uniprot)
                     
 
 if __name__ == "__main__":

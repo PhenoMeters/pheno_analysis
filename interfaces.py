@@ -96,7 +96,7 @@ def find_interfaces_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects
                             psp_only_uniprot.loc[phosphosite_row_index,'closest_interface'] = interface_list.append(interface_to_add[0]) # put unique interfaceID in closest interface
                             psp_only_uniprot.loc[phosphosite_row_index,'distance_from_interface'] = 0.0 
                             min_dist = 0.0
-                        elif (min_dist != 0.0): # if the phosphosite isn't in any interfaces
+                        elif min_dist != 0.0: # if the phosphosite isn't in any interfaces
                             #print("phosphosite isn't in any interfaces")
                             input_struct = ppdb.df['ATOM']
                             #print(input_struct)
