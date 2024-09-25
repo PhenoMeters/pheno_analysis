@@ -17,7 +17,7 @@ import os
 def run_parallel_interfaces(number_of_threads, psp_data):
     #adding columns to psp data
 
-    psp_data['closest_interface'] = ""
+    psp_data['closest_interface'] = []
     psp_data['inside_interface'] = 0
     psp_data['distance_from_interface'] = np.nan
 
@@ -76,7 +76,7 @@ def find_interfaces_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects
                 #print(residue_num)
                 # use the residue # to get the coordinates in space from pdb file
                 
-                
+                interface_list = []
                 for interface_index in interface_only_uniprot.index : # get all the residues in all of the interfaces 
                     if pd.notna(interface_only_uniprot.loc[interface_index,'ifresid1']) & pd.notna(interface_only_uniprot.loc[interface_index,'ifresid2']):
                         if interfaces_data.loc[interface_index,'uniprot_id1'] == uniprot:
@@ -93,10 +93,10 @@ def find_interfaces_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects
                             psp_only_uniprot.loc[phosphosite_row_index,'inside_interface'] = 1 # if residue is in the interface, put 1 in the inside interface column
                             interface_to_add = (interface_only_uniprot.loc[interface_index,'interaction_id'].split('_'))
                             interface_to_add.remove(uniprot)
-                            psp_only_uniprot.loc[phosphosite_row_index,'closest_interface'] = interface_to_add[0] # put unique interfaceID in closest interface
+                            psp_only_uniprot.loc[phosphosite_row_index,'closest_interface'] = interface_list.append(interface_to_add[0]) # put unique interfaceID in closest interface
                             psp_only_uniprot.loc[phosphosite_row_index,'distance_from_interface'] = 0.0 
-                            break # break because you don't want to contiue looking for interfaces (and therefore overwrite the inside interface and closest interface)
-                        else: # if the phosphosite isn't in any interfaces
+                            min_dist = 0.0
+                        elif (min_dist != 0.0): # if the phosphosite isn't in any interfaces
                             #print("phosphosite isn't in any interfaces")
                             input_struct = ppdb.df['ATOM']
                             #print(input_struct)
@@ -108,13 +108,13 @@ def find_interfaces_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects
                                 if min_dist > new_dist: # if this is the smallest distance so far, replace min_dist with new_dist
                                     interface_to_add = (interface_only_uniprot.loc[interface_index,'interaction_id'].split('_'))
                                     interface_to_add.remove(uniprot)
-                                    psp_only_uniprot.loc[phosphosite_row_index,'closest_interface'] = interface_to_add[0]
+                                    psp_only_uniprot.loc[phosphosite_row_index,'closest_interface'] = interface_to_add
                                     psp_only_uniprot.loc[phosphosite_row_index,'distance_from_interface'] = new_dist # replace distance_from_interface with min_dist
                                     min_dist = new_dist
                                     print("replaced old dist with", min_dist)
     with open(pickle_file_path, 'wb') as handle:
         pickle.dump(psp_only_uniprot, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    return(psp_only_uniprot)
+    return(psp_only_uniprot) 
 
 
 
