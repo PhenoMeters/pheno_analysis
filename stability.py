@@ -70,8 +70,8 @@ def add_plddt_and_foldx_ddg(psp_only_uniprot: pd.DataFrame, pickle_output = "/qf
                 psp_only_uniprot.loc[phosphosite_row_index, 'foldx_ddg_abs_max'] = stability_only_res_uniprot['foldx_ddg'].abs().max()
                 psp_only_uniprot.loc[phosphosite_row_index, 'foldx_ddg_abs_median'] = stability_only_res_uniprot['foldx_ddg'].abs().median()
 
-    with open(pickle_file_path, 'wb') as handle:
-        pickle.dump(psp_only_uniprot, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(pickle_file_path, 'wb') as handle:
+            pickle.dump(psp_only_uniprot, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return(psp_only_uniprot)
 
 if __name__ == "__main__":
