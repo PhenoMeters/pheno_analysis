@@ -76,7 +76,7 @@ def add_plddt_and_foldx_ddg(psp_only_uniprot: pd.DataFrame, pickle_output = "/qf
 
 if __name__ == "__main__":
     psp = "/people/imal967/git_repos/pheno_analysis/phosphosite_for_pockets.csv"
-    output_location = "/people/imal967/git_repos/pheno_analysis/2024.05.28_foldx_energy.csv"
+    output_location = "/people/imal967/git_repos/pheno_analysis/merged_stability_FINAL2.csv"
     num_threads = 64
     df_to_export = run_parallel_stability(num_threads, psp)
     pd.DataFrame(df_to_export).to_csv(output_location)
