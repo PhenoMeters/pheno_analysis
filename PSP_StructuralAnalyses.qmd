@@ -1,0 +1,54 @@
+---
+title: "Structural Analyses of PSP database"
+format: html
+---
+
+
+```{python}
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import scipy.stats as stats
+
+```
+
+
+```{python}
+# Load the data
+df = pd.read_csv("Structural_PSP/merged_interface_pocket_stability.csv")
+df
+```
+
+
+```{python}
+df.drop([col for col in df.columns if 'Unnamed:' in col], axis=1, inplace=True)
+df.columns
+```
+
+```{python}
+df[df["closest_interface"] == ',']
+```
+```{python}
+# print(df['closest_interface'])
+# print(df['closest_pocket'])
+# print(df['inside_interface'])
+df['closest_interface'] = [interface if (isinstance(interface, str)) else '' for interface in df['closest_interface']]
+df['closest_interface'] = [interface[1:] if (len(interface) > 0 and interface[0] == ',') else interface for interface in df['closest_interface']]
+
+df['closest_pocket'] = [pocket if (isinstance(pocket, str)) else '' for pocket in df['closest_pocket']]
+df['closest_pocket'] = [pocket[1:] if (len(pocket) > 0 and pocket[0] == ',') else pocket for pocket in df['closest_pocket']]
+```
+
+
+```{python}
+print(df['closest_interface'])
+print(df['closest_pocket'])
+print(df['inside_interface'])
+```
+
+```{python}
+df.to_pickle("Structural_PSP/PSP_interface_pocket_stability.pkl")
+df.to_csv("Structural_PSP/PSP_interface_pocket_stability.tsv", index=False, sep="\t")
+```
+
