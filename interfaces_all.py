@@ -103,7 +103,7 @@ def find_interfaces_per_uniprot(psp_only_uniprot, pickle_output = "/qfs/projects
                             #print(input_struct)
                             
                             #print(residue_num, interface_residues)
-                            new_dist = find_mean_distance(input_struct, residue_num, interface_residues)
+                            new_dist = find_mean_distances(input_struct, residue_num, interface_residues)
                             print("the new dist is:" , new_dist)
                             if new_dist:
                                 if min_dist > new_dist: # if this is the smallest distance so far, replace min_dist with new_dist
