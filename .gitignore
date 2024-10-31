@@ -3,3 +3,6 @@
 *.csv
 *.pyc
 /__pycache__/*
+/logs
+/results
+/plots
