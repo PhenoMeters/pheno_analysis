@@ -19,4 +19,4 @@ conda activate procaliper
 export PATH=/people/imal967/.conda/envs/procaliper/bin:$PATH
 
 
-python use_procaliper.py /people/imal967/git_repos/pheno_analysis/test_psp.csv /people/imal967/git_repos/pheno_analysis/procaliper_TEST.csv
+python use_procaliper.py /people/imal967/git_repos/pheno_analysis/phosphosite_for_pockets.csv /people/imal967/git_repos/pheno_analysis/procaliper_TEST.csv
