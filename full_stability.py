@@ -17,7 +17,7 @@ import pickle
 This function adds plddt data to the phosphosite dataset, using the stability data.
 '''
 
-def run_parallel_stability(number_of_threads: int, phosphosite_data_PATH: str) -> pd.DataFrame:
+def run_parallel_stability(number_of_threads: int) -> pd.DataFrame:
     # reading in data
     paths_to_stability = glob.glob("/rcfs/projects/proteometer/ProtVar/predictions/stability/stability_split/*_stability.csv")
 
