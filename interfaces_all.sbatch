@@ -4,9 +4,9 @@
 #SBATCH -N 1
 #SBATCH -n 64
 #SBATCH -p "slurm"
-#SBATCH --job-name="interfaces_analysis"
-#SBATCH -o LOG_interfaces_analysis.log
-#SBATCH -e ERR_interfaces_analysis.txt
+#SBATCH --job-name="ALL_interfaces_analysis"
+#SBATCH -o logs/LOG_interfaces_analysis.log
+#SBATCH -e logs/ERR_interfaces_analysis.txt
 #SBATCH --mail-user=alexandria.im@pnnl.gov
 #SBATCH --mail-type END
 
@@ -18,4 +18,4 @@ source /share/apps/python/miniconda23.3.1/etc/profile.d/conda.sh
 conda activate ml_ptm
 export PATH=/people/imal967/.conda/envs/ml_ptm/bin:$PATH
 
-python interfaces.py /people/imal967/git_repos/pheno_analysis/phosphosite_for_pockets.csv /people/imal967/git_repos/pheno_analysis/merged_interfaces_FINAL2.csv
+python interfaces_all.py 
