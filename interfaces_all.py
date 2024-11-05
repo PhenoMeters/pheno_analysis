@@ -13,28 +13,10 @@ import datetime
 import pickle
 import os
 
-# def split_interfaces_df(save_interfaces_path: str) -> None:
-#     full_interfaces_df = pd.read_csv("/rcfs/projects/proteometer/ProtVar/predictions/interfaces/2024.05.28_interface_summary_5A.tsv", delimiter='\t', header=0)
-#     uniprot1 = full_interfaces_df['uniprot_id1'].unique().tolist()
-#     uniprot2 = full_interfaces_df['uniprot_id2'].unique().tolist()
-#     all_uniprots = uniprot1 + uniprot2
-#     all_uniprots = list(set(all_uniprots))
-#     for uniprot in all_uniprots:
-#         interface_only_uniprot = full_interfaces_df.loc[(full_interfaces_df['uniprot_id1'] == uniprot) | (full_interfaces_df['uniprot_id2'] == uniprot)] # isolate to uniprot in either 1 or 2
-#         interface_only_uniprot["file_uniprot"] = uniprot
-#         new_interface_path = f"{save_interfaces_path}/{uniprot}_interfaces.csv"
-#         print("saving csv")
-#         if not os.path.isfile(new_interface_path): # check if csv already exists
-#             print(new_interface_path)
-#             interface_only_uniprot.to_csv(new_interface_path)
 
 interfaces_data = pd.read_csv("/rcfs/projects/proteometer/ProtVar/predictions/interfaces/2024.05.28_interface_summary_5A.tsv", delimiter='\t', header=0)
 
 def run_parallel_interfaces(number_of_threads, stability_data):
-    #adding columns to psp data
-
-    # get paths to all interface files
-    #paths_to_interfaces = glob.glob("/qfs/projects/proteometer/pheno_analysis/interfaces_split/*_interfaces.csv")
 
     unique_uniprot_stability = [stability_data[stability_data["protein_acc"]==uniprot_id].copy() for uniprot_id in stability_data["protein_acc"].unique()]
 
