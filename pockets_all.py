@@ -94,15 +94,14 @@ def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data
                             pocket_list = ','.join([pocket_list, str(pocket_only_uniprot.loc[pocket_index,'pocket_id'])])
                             uniprot_only_stability.loc[phosphosite_row_index,'closest_pocket'] = pocket_list # put unique pocketID in closest pocket
                             uniprot_only_stability.loc[phosphosite_row_index,'distance_from_pocket'] = 0.0
-                            new_mean_dist = find_mean_distance(input_struct, residue_num, pocket_residues)
+                            new_min_dist, new_mean_dist = find_min_and_mean_distance(input_struct, residue_num, pocket_residues)
                             if new_mean_dist < mean_dist:
                                 mean_dist = new_mean_dist
                                 uniprot_only_stability.loc[phosphosite_row_index,'mean_distance_from_pocket'] = mean_dist 
                             min_dist = 0.0
-                        else: # if the phosphosite isn't in any pockets
-                            #print("phosphosite isn't in any pockets")
+                        elif min_dist != 0.0:                            #print("phosphosite isn't in any pockets")
                             input_struct = ppdb.df['ATOM']
-                            new_mean_dist = find_mean_distance(input_struct, residue_num, pocket_residues)
+                            new_min_dist, new_mean_dist = find_min_and_mean_distance(input_struct, residue_num, pocket_residues)
 
                             #print("the new dist is:" , new_dist)
                             if new_mean_dist:
@@ -112,7 +111,6 @@ def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data
                                     uniprot_only_stability.loc[phosphosite_row_index,'closest_pocket'] = pocket_to_add[0]
                                     uniprot_only_stability.loc[phosphosite_row_index,'mean_distance_from_pocket'] = new_mean_dist # replace distance_from_pocket with min_dist
                                     mean_dist = new_mean_dist
-                                    new_min_dist = find_min_distance(input_struct, residue_num, pocket_residues)
                                     uniprot_only_stability.loc[phosphosite_row_index,'min_distance_from_pocket'] = new_min_dist
                                     min_dist = new_min_dist
 

@@ -97,13 +97,13 @@ def find_interfaces_per_uniprot(uniprot_only_stability, interfaces_data = interf
                             interface_list = ','.join([interface_list, interface_to_add[0]])
                             uniprot_only_stability.loc[phosphosite_row_index,'closest_interface'] = interface_list # put unique interfaceID in closest interface
                             uniprot_only_stability.loc[phosphosite_row_index,'min_distance_from_interface'] = 0.0 
-                            new_mean_dist = find_mean_distance(input_struct, residue_num, interface_residues)
+                            new_min_dist, new_mean_dist = find_min_and_mean_distance(input_struct, residue_num, interface_residues)
                             if new_mean_dist < mean_dist:
                                 mean_dist = new_mean_dist
                                 uniprot_only_stability.loc[phosphosite_row_index,'mean_distance_from_interface'] = mean_dist 
                             min_dist = 0.0
-                        else: # if the phosphosite isn't in any interfaces
-                            new_mean_dist = find_mean_distance(input_struct, residue_num, interface_residues)
+                        elif min_dist != 0.0: # if the phosphosite isn't in any interfaces
+                            new_min_dist, new_mean_dist = find_min_and_mean_distance(input_struct, residue_num, interface_residues)
 
                             #print("the new dist is:" , new_dist)
                             if new_mean_dist:
@@ -113,7 +113,6 @@ def find_interfaces_per_uniprot(uniprot_only_stability, interfaces_data = interf
                                     uniprot_only_stability.loc[phosphosite_row_index,'closest_interface'] = interface_to_add[0]
                                     uniprot_only_stability.loc[phosphosite_row_index,'mean_distance_from_interface'] = new_mean_dist # replace distance_from_interface with min_dist
                                     mean_dist = new_mean_dist
-                                    new_min_dist = find_min_distance(input_struct, residue_num, interface_residues)
                                     uniprot_only_stability.loc[phosphosite_row_index,'min_distance_from_interface'] = new_min_dist
                                     min_dist = new_min_dist
                                     #print("replaced old dist with", min_dist)
