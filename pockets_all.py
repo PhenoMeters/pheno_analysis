@@ -16,7 +16,7 @@ import os
 
 '''
 this script takes in psp data and pockets data.  It will check if the phosphosites are located in any pockets, which is the nearest, and the distance to each
-usage:   pockets.py <path to phosphosite data> <path to pockets data>
+usage: python pockets_all.py <input stability csv> <output file and location>
 
 '''
 
@@ -122,7 +122,7 @@ def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data
 
 if __name__ == "__main__":
     num_threads = 64
-    stability_data = pd.read_csv("/rcfs/projects/proteometer/human_proteome_precaculated/TEST_stability_precalculated.csv")
-    output_location = "/people/imal967/git_repos/pheno_analysis/TEST_pockets_precaculated.csv"
+    stability_data = pd.read_csv(sys.argv[1])
+    output_location = sys.argv[2]
     df_to_export = run_parallel_pockets(num_threads, stability_data)
     pd.DataFrame(df_to_export).to_csv(output_location)
