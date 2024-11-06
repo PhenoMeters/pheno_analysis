@@ -125,7 +125,7 @@ def find_interfaces_per_uniprot(uniprot_only_stability, interfaces_data = interf
                 
 if __name__ == "__main__":
     num_threads = 64
-    stability_data = pd.read_csv("/rcfs/projects/proteometer/human_proteome_precaculated/TEST_stability_precalculated.csv")
-    output_location = "/people/imal967/git_repos/pheno_analysis/TEST_interfaces_precaculated.csv"
+    stability_data = pd.read_csv(sys.argv[1])
+    output_location = sys.argv[2]
     df_to_export = run_parallel_interfaces(num_threads, stability_data)
     pd.DataFrame(df_to_export).to_csv(output_location)
