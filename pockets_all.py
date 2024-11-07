@@ -26,7 +26,7 @@ pockets_data = pd.read_csv("/rcfs/projects/proteometer/ProtVar/predictions/pocke
 def run_parallel_pockets(number_of_threads, stability_data):
 
     # get all of the unique uniprots
-    unique_uniprot_stability = [stability_data[stability_data["uniprot_id"]==uniprot_id].copy() for uniprot_id in stability_data["uniprot_id"].unique()]
+    unique_uniprot_stability = [stability_data[stability_data["protein_acc"]==uniprot_id].copy() for uniprot_id in stability_data["protein_acc"].unique()]
 
 
     start_time = time.perf_counter()
@@ -74,8 +74,8 @@ def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data
 
     # for each psp
         for phosphosite_row_index in uniprot_only_stability.index:
-            if pd.notna(uniprot_only_stability.loc[phosphosite_row_index,'res_number']):
-                residue_num = int(uniprot_only_stability.loc[phosphosite_row_index,'res_number']) # finding the residue number of the psp
+            if pd.notna(uniprot_only_stability.loc[phosphosite_row_index,'position']):
+                residue_num = int(uniprot_only_stability.loc[phosphosite_row_index,'position']) # finding the residue number of the psp
                 min_dist = np.inf # make min dist extremely high at first
                 mean_dist = np.inf
                 #print(residue_num)
@@ -100,14 +100,12 @@ def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data
                                 uniprot_only_stability.loc[phosphosite_row_index,'mean_distance_from_pocket'] = mean_dist 
                             min_dist = 0.0
                         elif min_dist != 0.0:                            #print("phosphosite isn't in any pockets")
-                            input_struct = ppdb.df['ATOM']
                             new_min_dist, new_mean_dist = find_min_and_mean_distance(input_struct, residue_num, pocket_residues)
 
                             #print("the new dist is:" , new_dist)
                             if new_mean_dist:
                                 if mean_dist > new_mean_dist: # if this is the smallest distance so far, replace min_dist with new_dist
-                                    pocket_to_add = (pocket_only_uniprot.loc[pocket_index,'interaction_id'].split('_'))
-                                    pocket_to_add.remove(uniprot)
+                                    pocket_to_add = str(pocket_only_uniprot.loc[pocket_index,'pocket_id'])
                                     uniprot_only_stability.loc[phosphosite_row_index,'closest_pocket'] = pocket_to_add[0]
                                     uniprot_only_stability.loc[phosphosite_row_index,'mean_distance_from_pocket'] = new_mean_dist # replace distance_from_pocket with min_dist
                                     mean_dist = new_mean_dist
