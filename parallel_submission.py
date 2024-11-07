@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 ### Constant SLURM Parameters ###
-account = "proteometer"
+account = "ptm_annotation"
 time = "4-00:00:00"
 queue = "slurm"
 node = '1'
