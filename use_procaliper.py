@@ -20,11 +20,11 @@ import os
 Runs Procaliper sasa and charge calculations in parallel on csv with multiple uniprotIDs
 '''
 
-def run_parallel_procaliper(number_of_threads, psp_data):
+def run_parallel_procaliper(number_of_threads, human_db):
 
     # get all of the unique uniprots
-    # unique_uniprots = psp_data['uniprot_id'].unique()
-    unique_uniprot_psp = [psp_data[psp_data["uniprot_id"]==uniprot_id].copy() for uniprot_id in psp_data["uniprot_id"].unique()]
+    # unique_uniprots = human_db['uniprot_id'].unique()
+    unique_uniprot_psp = [human_db[human_db["protein_acc"]==uniprot_id].copy() for uniprot_id in human_db["protein_acc"].unique()]
 
     start_time = time.perf_counter()
     with Pool(number_of_threads) as pool:
@@ -48,7 +48,7 @@ Calculates sasa values and charge values for given csv
 def find_sasa_charge(psp_only_uniprot, pickle_output = "/qfs/projects/proteometer/pheno_analysis/sasa_charge_pickle_files", sasa_output = "/qfs/projects/proteometer/pheno_analysis/sasa_csv", charge_output = "/qfs/projects/proteometer/pheno_analysis/charge_csv"):
 
     # isolate to psp 
-    uniprot = psp_only_uniprot["uniprot_id"].to_list()[0]
+    uniprot = psp_only_uniprot["protein_acc"].to_list()[0]
     pickle_file_path = f"{pickle_output}/{uniprot}.pkl"
     if os.path.isfile(pickle_file_path):
         with open(pickle_file_path, 'rb') as handle:
@@ -66,6 +66,8 @@ def find_sasa_charge(psp_only_uniprot, pickle_output = "/qfs/projects/proteomete
         # calculate sasa and charge using Procaliper
         sasa_df = pd.DataFrame(protein_object.get_sasa())
         charge_df = pd.DataFrame(protein_object.get_charge())
+        charge_df['UNIPROT'] = uniprot
+        sasa_df['UNIPROT'] = uniprot
         charge_df['RES_NUM'] = charge_df['residue_number']
         sasa_df['RES_NUM'] = sasa_df['residue_number']
 
@@ -89,7 +91,7 @@ def find_sasa_charge(psp_only_uniprot, pickle_output = "/qfs/projects/proteomete
 
 if __name__ == "__main__":
     num_threads = 64
-    psp_data = pd.read_csv(sys.argv[1])
+    human_db = pd.read_csv(sys.argv[1])
     output_location = sys.argv[2]
-    df_to_export = run_parallel_procaliper(num_threads, psp_data)
+    df_to_export = run_parallel_procaliper(num_threads, human_db)
     pd.DataFrame(df_to_export).to_csv(output_location)
