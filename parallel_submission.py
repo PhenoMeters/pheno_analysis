@@ -67,8 +67,8 @@ for stability_chunk in all_stability_chunks:
     interfaces_slurm.append(f"python {interfaces_python_script} {stability_chunk} {interfaces_output_file} \n")
     
     # write the slurm files
-    pockets_slurm_filename = f"pockets_{batch_number}.sbatch"
-    interfaces_slurm_filename = f"pockets_{batch_number}.sbatch"
+    pockets_slurm_filename = f"batch_pockets_{batch_number}.sbatch"
+    interfaces_slurm_filename = f"batch_interfaces_{batch_number}.sbatch"
     with open(pockets_slurm_filename, 'w') as sbatch:
         sbatch.write(''.join(pockets_slurm))
     with open(interfaces_slurm_filename, 'w') as sbatch:
