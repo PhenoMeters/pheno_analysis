@@ -50,7 +50,7 @@ def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data
     # isolate to psp and pockets in each uniprot
     uniprot = uniprot_only_stability["protein_acc"].to_list()[0]
     pickle_file_path = f"{pickle_output}/{uniprot}.pkl"
-    pocket_only_uniprot = pockets_data[pockets_data['uniprot_id'] == uniprot] # isolate pockets data to only that uniprot
+    pocket_only_uniprot = pockets_data[pockets_data['struct_id'].str.contains(uniprot)] # isolate pockets data to only that uniprot
 
     if os.path.isfile(pickle_file_path):
         with open(pickle_file_path, 'rb') as handle:
@@ -63,26 +63,25 @@ def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data
     uniprot_only_stability['min_distance_from_pocket'] = np.nan
     uniprot_only_stability['mean_distance_from_pocket'] = np.nan
 
-    # parse your structure here
-    pdb_name = glob.glob("/rcfs/projects/proteometer/alphafold_swissprot_pdb/*" + uniprot + "-F1-*")
-    print("name of pdb is:", pdb_name)
-    if pdb_name:  
-        ppdb = PandasPdb()  
-        ppdb.read_pdb(pdb_name[0])
-        input_struct = ppdb.df['ATOM']
-
-
     # for each psp
-        for phosphosite_row_index in uniprot_only_stability.index:
-            if pd.notna(uniprot_only_stability.loc[phosphosite_row_index,'position']):
-                residue_num = int(uniprot_only_stability.loc[phosphosite_row_index,'position']) # finding the residue number of the psp
-                min_dist = np.inf # make min dist extremely high at first
-                mean_dist = np.inf
-                #print(residue_num)
-                # use the residue # to get the coordinates in space from pdb file
-                
-                pocket_list = ""
-                for pocket_index in pocket_only_uniprot.index : # get all the residues in all of the pockets 
+    for phosphosite_row_index in uniprot_only_stability.index:
+        if pd.notna(uniprot_only_stability.loc[phosphosite_row_index,'position']):
+            residue_num = int(uniprot_only_stability.loc[phosphosite_row_index,'position']) # finding the residue number of the psp
+            min_dist = np.inf # make min dist extremely high at first
+            mean_dist = np.inf
+            #print(residue_num)
+            # use the residue # to get the coordinates in space from pdb file
+            
+            pocket_list = ""
+            for pocket_index in pocket_only_uniprot.index : # get all the residues in all of the pockets 
+                structure_id = pocket_only_uniprot.loc[pocket_index,'struct_id']
+                # parse your structure here
+                pdb_name = glob.glob("/rcfs/projects/proteometer/alphafold_swissprot_pdb/AF-" + structure_id + "-model_v4.pdb")
+                # print("name of pdb is:", pdb_name)
+                if pdb_name:  
+                    ppdb = PandasPdb()  
+                    ppdb.read_pdb(pdb_name[0])
+                    input_struct = ppdb.df['ATOM']
                     if pd.notna(pocket_only_uniprot.loc[pocket_index,'pocket_resid']):
                         pocket_residues = pocket_only_uniprot.loc[pocket_index,'pocket_resid']
 
@@ -91,7 +90,7 @@ def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data
                         #print(pocket_residues)
                         if residue_num in pocket_residues:
                             uniprot_only_stability.loc[phosphosite_row_index,'inside_pocket'] = 1 # if residue is in the pocket, put 1 in the inside pocket column
-                            pocket_list = ','.join([pocket_list, str(pocket_only_uniprot.loc[pocket_index,'pocket_id'])])
+                            pocket_list = ','.join([pocket_list, structure_id + '_' + str(pocket_only_uniprot.loc[pocket_index,'pocket_id'])])
                             uniprot_only_stability.loc[phosphosite_row_index,'closest_pocket'] = pocket_list # put unique pocketID in closest pocket
                             uniprot_only_stability.loc[phosphosite_row_index,'distance_from_pocket'] = 0.0
                             new_min_dist, new_mean_dist = find_min_and_mean_distance(input_struct, residue_num, pocket_residues)
@@ -105,7 +104,7 @@ def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data
                             #print("the new dist is:" , new_dist)
                             if new_mean_dist:
                                 if mean_dist > new_mean_dist: # if this is the smallest distance so far, replace min_dist with new_dist
-                                    pocket_to_add = str(pocket_only_uniprot.loc[pocket_index,'pocket_id'])
+                                    pocket_to_add = structure_id + '_' + str(pocket_only_uniprot.loc[pocket_index,'pocket_id'])
                                     uniprot_only_stability.loc[phosphosite_row_index,'closest_pocket'] = pocket_to_add[0]
                                     uniprot_only_stability.loc[phosphosite_row_index,'mean_distance_from_pocket'] = new_mean_dist # replace distance_from_pocket with min_dist
                                     mean_dist = new_mean_dist
