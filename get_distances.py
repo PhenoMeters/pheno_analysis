@@ -14,7 +14,7 @@ returns distances between target protein and list of proteins
 
 # best metric for distance is get the distance between target and each of the list and average them out 
 
-def find_mean_distances(structure, target_residue, residue_list):
+def find_mean_distance(structure, target_residue, residue_list):
     residue1 = target_residue
     distances = []
     for residue2 in residue_list:
@@ -24,11 +24,31 @@ def find_mean_distances(structure, target_residue, residue_list):
     return np.nanmean(distances)
 
 
-'''
-returns distance between 2 proteins, using the CA atom from each protein
-'''
+def find_min_distance(structure, target_residue, residue_list):
+    residue1 = target_residue
+    distances = []
+    for residue2 in residue_list:
+        distance_to_add = get_pairwise_distance(structure, residue1, residue2)
+        # print(distance_to_add)
+        distances.append(distance_to_add)
+    return np.nanmin(distances)
+
+def find_min_and_mean_distance(structure, target_residue, residue_list):
+    residue1 = target_residue
+    distances = []
+    for residue2 in residue_list:
+        distance_to_add = get_pairwise_distance(structure, residue1, residue2)
+        # print(distance_to_add)
+        distances.append(distance_to_add)
+    return np.nanmin(distances), np.nanmean(distances)
+
+
+
 
 def get_pairwise_distance(structure, residue_num_1, residue_num_2):
+    '''
+        returns distance between 2 residues, using the CA atom from each residues
+    '''
     #print("Begin get_pairwise_distance")
     atom_1 = structure.query('residue_number == @residue_num_1 and atom_name == "CA"') # restrict to only res #1 and alpha carbon 
     atom_2 = structure.query('residue_number == @residue_num_2 and atom_name == "CA"') # restrict to only res #2 and alpha carbon 
