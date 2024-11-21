@@ -3,3 +3,8 @@
 *.csv
 *.pyc
 /__pycache__/*
+/logs
+/results
+/plots
+test.ipynb
+/scripts_sbatch

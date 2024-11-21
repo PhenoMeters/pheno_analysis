@@ -33,6 +33,15 @@ def find_min_distance(structure, target_residue, residue_list):
         distances.append(distance_to_add)
     return np.nanmin(distances)
 
+def find_min_and_mean_distance(structure, target_residue, residue_list):
+    residue1 = target_residue
+    distances = []
+    for residue2 in residue_list:
+        distance_to_add = get_pairwise_distance(structure, residue1, residue2)
+        # print(distance_to_add)
+        distances.append(distance_to_add)
+    return np.nanmin(distances), np.nanmean(distances)
+
 
 
 

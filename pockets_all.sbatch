@@ -5,9 +5,9 @@
 #SBATCH -n 64
 #SBATCH -p "slurm"
 #SBATCH --job-name="pockets_all"
-#SBATCH -o pockets_all_out.log
-#SBATCH -e pockets_all_err.txt
-#SBATCH --mail-user=song.feng@pnnl.gov
+#SBATCH -o logs/pockets_all_out.log
+#SBATCH -e logs/pockets_all_err.txt
+#SBATCH --mail-user=alexandria.im@pnnl.gov
 #SBATCH --mail-type END
 
 
@@ -20,4 +20,4 @@ export PATH=/qfs/projects/proteometer/proteometer_conda/bin:$PATH
 
 cd /qfs/projects/proteometer/pheno_analysis
 
-python pockets_all.py /rcfs/projects/proteometer/ProtVar/predictions/pockets/2024.05.28_pockets.tsv ./results 
+python pockets_all.py
