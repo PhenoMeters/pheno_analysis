@@ -14,7 +14,7 @@ mail = "song.feng@pnnl.gov"  # will send a email once finished or terminated or 
 modules = ["gcc/7.5.0", "python/miniconda23.3.1"]
 extras = [
         "source /share/apps/python/miniconda23.3.1/etc/profile.d/conda.sh",
-        "conda activate ml_ptm",
+        "conda activate /people/imal967/.conda/envs/ml_ptm",
         "export PATH=/people/imal967/.conda/envs/ml_ptm/bin:$PATH",
         ]
 
