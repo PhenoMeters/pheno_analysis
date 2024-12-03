@@ -76,7 +76,7 @@ def functional_distances(uniprot_only_stability, functions_data = functions_data
       
         # for each psp
         for stability_row_index in uniprot_only_stability.index:
-            if pd.notna(uniprot_only_stability.loc[phosphosite_row_index,'position']):
+            if pd.notna(uniprot_only_stability.loc[stability_row_index,'position']):
                 residue_num = int(uniprot_only_stability.loc[stability_row_index,'position']) # finding the residue number of the psp
                 active_min_dist = np.inf # make min dist extremely high at first
                 binding_min_dist = np.inf
