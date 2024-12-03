@@ -43,8 +43,8 @@ for stability_chunk in all_stability_chunks:
     # p_err = f"logs/{batch_number}_multisub_pockets.err"
     # i_out = f"logs/{batch_number}_multisub_interfaces.log"
     # i_err = f"logs/{batch_number}_multisub_interfaces.err"
-    f_out = f"logs/{batch_number}_multisub_interfaces.log"
-    f_err = f"logs/{batch_number}_multisub_interfaces.err"
+    f_out = f'{working_dir}/logs/{batch_number}_multisub_functions.log'
+    f_err = f'{working_dir}/logs/{batch_number}_multisub_functions.err'
 
 
 
@@ -88,7 +88,7 @@ for stability_chunk in all_stability_chunks:
     # write the slurm files
     # pockets_slurm_filename = f"batch_pockets_{batch_number}.sbatch"
     # interfaces_slurm_filename = f"batch_interfaces_{batch_number}.sbatch"
-    functions_slurm_filename = f"batch_functions_{batch_number}.sbatch"
+    functions_slurm_filename = f"{working_dir}/sbatch_scripts/batch_functions_{batch_number}.sbatch"
     # with open(pockets_slurm_filename, 'w') as sbatch:
     #     sbatch.write(''.join(pockets_slurm))
     # with open(interfaces_slurm_filename, 'w') as sbatch:

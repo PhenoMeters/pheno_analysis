@@ -142,5 +142,5 @@ if __name__ == "__main__":
     num_threads = 64
     stability_data = pd.read_csv(sys.argv[1])
     output_location = sys.argv[2]
-    df_to_export = run_parallel_functions(num_threads, human_db)
+    df_to_export = run_parallel_functions(num_threads, stability_data)
     pd.DataFrame(df_to_export).to_csv(output_location)
