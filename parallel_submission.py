@@ -59,7 +59,7 @@ for stability_chunk in all_stability_chunks:
     # create interfaces slurm template
     interfaces_slurm_template = f"#!/bin/sh\n#SBATCH -A {account}\n#SBATCH -t {time}\n#SBATCH -N {node}\n#SBATCH --cpus-per-task={core}\n#SBATCH -p {queue}"
     interfaces_slurm = [interfaces_slurm_template]
-    interfaces_slurm.append(f"\n#SBATCH -o {p_out}\n#SBATCH -e {p_err}\n#SBATCH --mail-user={mail}\n#SBATCH --mail-type END\n \nmodule purge\n")
+    interfaces_slurm.append(f"\n#SBATCH -o {i_out}\n#SBATCH -e {i_err}\n#SBATCH --mail-user={mail}\n#SBATCH --mail-type END\n \nmodule purge\n")
     for module in modules:
         interfaces_slurm.append(f"module load {module}\n\n")
     for extra in extras:

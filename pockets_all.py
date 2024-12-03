@@ -112,8 +112,8 @@ def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data
                                     min_dist = new_min_dist
 
 
-        with open(pickle_file_path, 'wb') as handle:
-            pickle.dump(uniprot_only_stability, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open(pickle_file_path, 'wb') as handle:
+        pickle.dump(uniprot_only_stability, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return(uniprot_only_stability)
                     
 
