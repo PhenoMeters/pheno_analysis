@@ -91,7 +91,7 @@ def functional_distances(uniprot_only_stability, functions_data = functions_data
                         uniprot_only_stability.loc[stability_row_index,'closest_active_site_min_distance'] = 0.0
                     else:    
                         for active_site in active_site_residues:
-                            active_new_min_dist = find_min_distance(input_struct, residue_num, active_site)
+                            active_new_min_dist = get_pairwise_distance(input_struct, residue_num, active_site)
                             if active_min_dist > active_new_min_dist:
                                 uniprot_only_stability.loc[stability_row_index,'closest_active_site'] = active_site
                                 uniprot_only_stability.loc[stability_row_index,'closest_active_site_decription'] = active_site_descriptions[active_site_residues.index(active_site)]
@@ -110,7 +110,7 @@ def functional_distances(uniprot_only_stability, functions_data = functions_data
                         uniprot_only_stability.loc[stability_row_index,'closest_binding_site_min_distance'] = 0.0
                     else:    
                         for binding_site in binding_site_residues:
-                            binding_new_min_dist = find_min_distance(input_struct, residue_num, binding_site)
+                            binding_new_min_dist = get_pairwise_distance(input_struct, residue_num, binding_site)
                             if binding_min_dist > binding_new_min_dist:
                                 uniprot_only_stability.loc[stability_row_index,'closest_binding_site'] = binding_site
                                 uniprot_only_stability.loc[stability_row_index,'closest_binding_site_decription'] = binding_site_descriptions[binding_site_residues.index(binding_site)]
@@ -125,7 +125,7 @@ def functional_distances(uniprot_only_stability, functions_data = functions_data
                         uniprot_only_stability.loc[stability_row_index,'closest_dna_binding_site_min_distance'] = 0.0
                     else:    
                         for dna_binding_site in dna_binding_site_residues:
-                            dna_new_min_dist = find_min_distance(input_struct, residue_num, dna_binding_site)
+                            dna_new_min_dist = get_pairwise_distance(input_struct, residue_num, dna_binding_site)
                             if dna_min_dist > dna_new_min_dist:
                                 uniprot_only_stability.loc[stability_row_index,'closest_dna_binding_site'] = dna_binding_site
                                 uniprot_only_stability.loc[stability_row_index,'closest_dna_binding_site_min_distance'] = dna_new_min_dist
