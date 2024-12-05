@@ -83,7 +83,7 @@ def functional_distances(uniprot_only_stability, functions_data = functions_data
                 dna_min_dist = np.inf
                 # active site
                 if len(functions_only_uniprot['active_site_residues'].values) > 0 and functions_only_uniprot['active_site_residues'].values[0] != "[]":
-                    active_site_residues = [int(e[1:]) for e in functions_only_uniprot['active_site_residues'].values[0][1:-1].split(", ") if e.isdigit()]
+                    active_site_residues = [int(e) for e in functions_only_uniprot['active_site_residues'].values[0][1:-1].split(", ") if e.isdigit()]
                     active_site_descriptions = functions_only_uniprot['active_site_description'].values[0][1:-1].split(", ")
                     if residue_num in active_site_residues:
                         uniprot_only_stability.loc[stability_row_index,'closest_active_site'] = residue_num
@@ -102,7 +102,7 @@ def functional_distances(uniprot_only_stability, functions_data = functions_data
 
                 # binding site
                 if len(functions_only_uniprot['active_site_residues'].values) > 0 and functions_only_uniprot['binding_site_residues'].values[0] != "[]":
-                    binding_site_residues = [int(e[1:]) for e in functions_only_uniprot['binding_site_residues'].values[0][1:-1].split(", ") if e.isdigit()]
+                    binding_site_residues = [int(e) for e in functions_only_uniprot['binding_site_residues'].values[0][1:-1].split(", ") if e.isdigit()]
                     binding_site_descriptions = functions_only_uniprot['binding_site_description'].values[0][1:-1].split(", ")
                     if residue_num in binding_site_residues:
                         uniprot_only_stability.loc[stability_row_index,'closest_binding_site'] = residue_num
@@ -119,7 +119,7 @@ def functional_distances(uniprot_only_stability, functions_data = functions_data
                 
                 # dna binding site
                 if len(functions_only_uniprot['active_site_residues'].values) > 0 and functions_only_uniprot['dna_binding_residues'].values[0] != "[]":
-                    dna_binding_site_residues = [int(e[1:]) for e in functions_only_uniprot['dna_binding_residues'].values[0][1:-1].split(", ") if e.isdigit()]
+                    dna_binding_site_residues = [int(e) for e in functions_only_uniprot['dna_binding_residues'].values[0][1:-1].split(", ") if e.isdigit()]
                     if residue_num in dna_binding_site_residues:
                         uniprot_only_stability.loc[stability_row_index,'closest_dna_binding_site'] = residue_num
                         uniprot_only_stability.loc[stability_row_index,'closest_dna_binding_site_min_distance'] = 0.0
