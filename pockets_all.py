@@ -45,7 +45,7 @@ this function does pockets calcuations for each uniprot tthat it is given
 
 # for each unique uniprotID...
 # for uniprot in unique_uniprots:
-def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data, pickle_output = "/qfs/projects/proteometer/pheno_analysis/FULL_pockets_pickle_files"):
+def find_pockets_per_uniprot(uniprot_only_stability, pockets_data = pockets_data, pickle_output = "/qfs/projects/proteometer/pheno_analysis/pockets_pickle_files"):
     #print("start")
     # isolate to psp and pockets in each uniprot
     uniprot = uniprot_only_stability["protein_acc"].to_list()[0]

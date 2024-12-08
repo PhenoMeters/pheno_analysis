@@ -40,7 +40,7 @@ this function does interfaces calcuations for each uniprot tthat it is given
 
 # for each unique uniprotID...
 # for uniprot in unique_uniprots:
-def find_interfaces_per_uniprot(uniprot_only_stability, interfaces_data = interfaces_data, pickle_output = "/qfs/projects/proteometer/pheno_analysis/FULL_interfaces_pickle_files"):
+def find_interfaces_per_uniprot(uniprot_only_stability, interfaces_data = interfaces_data, pickle_output = "/qfs/projects/proteometer/pheno_analysis/interfaces_pickle_files"):
 
     # read in interfaces data, uniprot human data, and get uniprot
     uniprot = uniprot_only_stability["protein_acc"].to_list()[0]
