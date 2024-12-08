@@ -37,8 +37,6 @@ def run_parallel_procaliper(number_of_threads, human_db):
     return(concatenated_output)
 
 
-
-
 '''
 Calculates sasa values and charge values for given csv
 '''
@@ -58,7 +56,7 @@ def find_sasa_charge(psp_only_uniprot, pickle_output = "/qfs/projects/proteomete
 
     # create protein structure 
     protein_object = am.Protein.from_uniprot_id(uniprot)
-    pdb_name = glob.glob(f"/rcfs/projects/proteometer/alphafold_swissprot_pdb/*{protein_object.data['entry']}*.pdb")
+    pdb_name = glob.glob(f"/rcfs/projects/proteometer/alphafold_swissprot_pdb/*{uniprot}*.pdb")
     #print("name of pdb is:", pdb_name)
     if len(pdb_name) != 0:  
         protein_object.register_local_pdb(pdb_name[0]) # add pdb path to protein object
@@ -71,9 +69,9 @@ def find_sasa_charge(psp_only_uniprot, pickle_output = "/qfs/projects/proteomete
         charge_df['RES_NUM'] = charge_df['residue_number']
         sasa_df['RES_NUM'] = sasa_df['residue_number']
 
-        # save full protein sasa and charge
-        sasa_df.to_csv(f"{sasa_output}/{uniprot}_sasa.csv")
-        charge_df.to_csv(f"{charge_output}/{uniprot}_charge.csv")
+        # # save full protein sasa and charge
+        # sasa_df.to_csv(f"{sasa_output}/{uniprot}_sasa.csv")
+        # charge_df.to_csv(f"{charge_output}/{uniprot}_charge.csv")
 
         # merge the dataframes
         sasa_psp = pd.merge(psp_only_uniprot, sasa_df[['all_sasa_value', 'atom_sasa_values','RES_NUM']], how = 'left', on= 'RES_NUM')
