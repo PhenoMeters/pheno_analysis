@@ -40,7 +40,7 @@ this function does interfaces calcuations for each uniprot tthat it is given
 
 # for each unique uniprotID...
 # for uniprot in unique_uniprots:
-def find_interfaces_per_uniprot(uniprot_only_stability, interfaces_data = interfaces_data, pickle_output = "/qfs/projects/proteometer/pheno_analysis/FULL_interfaces_pickle_files"):
+def find_interfaces_per_uniprot(uniprot_only_stability, interfaces_data = interfaces_data, pickle_output = "/qfs/projects/proteometer/pheno_analysis/interfaces_pickle_files"):
 
     # read in interfaces data, uniprot human data, and get uniprot
     uniprot = uniprot_only_stability["protein_acc"].to_list()[0]
@@ -68,7 +68,7 @@ def find_interfaces_per_uniprot(uniprot_only_stability, interfaces_data = interf
         input_struct = ppdb.df['ATOM']
 
 
-    # for each psp
+        # for each psp
         for phosphosite_row_index in uniprot_only_stability.index:
             if pd.notna(uniprot_only_stability.loc[phosphosite_row_index,'position']): # only if there is a residue # (this threw an error previously)
                 residue_num = int(uniprot_only_stability.loc[phosphosite_row_index,'position']) # finding the residue number of the psp
@@ -116,8 +116,8 @@ def find_interfaces_per_uniprot(uniprot_only_stability, interfaces_data = interf
                                     uniprot_only_stability.loc[phosphosite_row_index,'min_distance_from_interface'] = new_min_dist
                                     min_dist = new_min_dist
                                     #print("replaced old dist with", min_dist)
-        with open(pickle_file_path, 'wb') as handle:
-            pickle.dump(uniprot_only_stability, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open(pickle_file_path, 'wb') as handle:
+        pickle.dump(uniprot_only_stability, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return(uniprot_only_stability) 
 
 
