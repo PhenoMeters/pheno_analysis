@@ -24,7 +24,7 @@ sites_data = pd.read_csv("/people/imal967/git_repos/pheno_analysis/binding_activ
 def run_parallel_sites(number_of_threads, human_db):
 
     # get all of the unique uniprots
-    unique_uniprot_psp = [human_db[human_db["Entry"]==uniprot_id].copy() for uniprot_id in human_db["Entry"].unique()]
+    unique_uniprot_psp = [human_db[human_db["protein_acc"]==uniprot_id].copy() for uniprot_id in human_db["protein_acc"].unique()]
 
     start_time = time.perf_counter()
     with Pool(number_of_threads) as pool:

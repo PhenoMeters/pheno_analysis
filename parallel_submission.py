@@ -25,7 +25,7 @@ interfaces_output_dir = "/qfs/projects/proteometer/pheno_analysis/FULL_interface
 pockets_output_dir = "/qfs/projects/proteometer/pheno_analysis/FULL_pockets_chunk_output"
 
 
-all_stability_chunks = glob.glob("/qfs/projects/proteometer/pheno_analysis/split_stability_input/stability_chunk_*.csv")
+all_stability_chunks = glob.glob("/qfs/projects/proteometer/pheno_analysis/split_stability_input/*")
 
 for stability_chunk in all_stability_chunks:
     filename_only = os.path.basename(stability_chunk)[:-4]
@@ -79,7 +79,7 @@ for stability_chunk in all_stability_chunks:
     pockets_submission = f"sbatch {pockets_slurm_filename}"
     interfaces_submission = f"sbatch {interfaces_slurm_filename}"
     os.system(pockets_submission)
-    os.system(interfaces_submission)
+    #os.system(interfaces_submission)
     print(f"submitted job {batch_number}")
 
     
